@@ -13,18 +13,34 @@
             text-align: center;
             cursor: pointer;
             transition: background 0.2s;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
+            display: block;
         }
-        .upload-area:hover { background: #f0fff0; }
+        .upload-area:hover { background: rgba(76,175,80,0.08); }
         .upload-area input[type="file"] { display: none; }
         .preview-img {
-            max-width: 280px;
-            max-height: 280px;
+            max-width: 260px;
+            max-height: 260px;
             border-radius: 10px;
-            margin: 16px auto;
+            margin: 12px auto 0;
             display: block;
             border: 2px solid #ddd;
         }
+        #predictBtn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 4px;
+            font-size: 1em;
+            border-radius: 8px;
+            border: none;
+            background: #4CAF50;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        #predictBtn:hover:not(:disabled) { background: #388e3c; }
+        #predictBtn:disabled { background: #aaa; cursor: not-allowed; }
         .top3-list { list-style: none; padding: 0; margin-top: 12px; }
         .top3-list li {
             display: flex;
@@ -45,6 +61,14 @@
         }
         .result-box h3 { margin: 0 0 4px; color: #2e7d32; font-size: 1.3em; }
         .result-box p { margin: 0; color: #555; }
+        .error-box {
+            background: #ffebee;
+            border-left: 5px solid #e53935;
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin-top: 20px;
+            color: #c62828;
+        }
     </style>
 </head>
 
@@ -56,9 +80,10 @@
         <p class="subtitle">Upload a vegetable image to identify it using VGG16</p>
     </div>
 
+    <!-- label handles click natively — no JS click() needed -->
     <label class="upload-area" id="uploadArea">
         <input type="file" id="imageInput" accept="image/*">
-        <p id="uploadText">Click to upload or drag & drop an image</p>
+        <p id="uploadText">Click to upload or drag &amp; drop an image</p>
         <img id="preview" class="preview-img" style="display:none;" alt="Preview">
     </label>
 
@@ -69,12 +94,10 @@
 
 <script>
     const imageInput = document.getElementById("imageInput");
-    const preview = document.getElementById("preview");
+    const preview    = document.getElementById("preview");
     const uploadText = document.getElementById("uploadText");
     const predictBtn = document.getElementById("predictBtn");
-    const resultDiv = document.getElementById("result");
-
-    document.getElementById("uploadArea").addEventListener("click", () => imageInput.click());
+    const resultDiv  = document.getElementById("result");
 
     imageInput.addEventListener("change", function() {
         const file = this.files[0];
@@ -109,7 +132,7 @@
             const data = await response.json();
 
             if (data.error) {
-                resultDiv.innerHTML = `<div class="result result-nocancel">Error: ${data.error}</div>`;
+                resultDiv.innerHTML = `<div class="error-box">${data.error}</div>`;
             } else {
                 const top3Html = data.top3.map(item =>
                     `<li><span>${item.class.replace(/_/g, " ")}</span><span>${item.confidence}%</span></li>`
@@ -125,17 +148,17 @@
                 `;
             }
         } catch (err) {
-            resultDiv.innerHTML = `<div class="result result-nocancel">Request failed: ${err.message}</div>`;
+            resultDiv.innerHTML = `<div class="error-box">Request failed: ${err.message}</div>`;
         }
 
         predictBtn.textContent = "Classify";
         predictBtn.disabled = false;
     });
 
-    // Drag and drop support
+    // Drag and drop
     const uploadArea = document.getElementById("uploadArea");
-    uploadArea.addEventListener("dragover", (e) => { e.preventDefault(); uploadArea.style.background = "#f0fff0"; });
-    uploadArea.addEventListener("dragleave", () => { uploadArea.style.background = ""; });
+    uploadArea.addEventListener("dragover",  (e) => { e.preventDefault(); uploadArea.style.background = "rgba(76,175,80,0.08)"; });
+    uploadArea.addEventListener("dragleave", ()  => { uploadArea.style.background = ""; });
     uploadArea.addEventListener("drop", (e) => {
         e.preventDefault();
         uploadArea.style.background = "";
