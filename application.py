@@ -29,23 +29,23 @@ IMAGENET_STD = [0.229, 0.224, 0.225]
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# Load class names
-with open(CLASS_NAMES_PATH, "r") as f:
-    CLASS_NAMES = json.load(f)
+# Load class names and model only if training artifacts exist
+CLASS_NAMES = None
+loaded_model = None
 
-NUM_CLASSES = len(CLASS_NAMES)
+if os.path.exists(CLASS_NAMES_PATH) and os.path.exists(MODEL_OUTPUT_PATH):
+    with open(CLASS_NAMES_PATH, "r") as f:
+        CLASS_NAMES = json.load(f)
 
-# Load VGG16 model
-def load_model():
+    NUM_CLASSES = len(CLASS_NAMES)
+
     model = models.vgg16(weights=None)
     in_features = model.classifier[6].in_features
     model.classifier[6] = nn.Linear(in_features, NUM_CLASSES)
     model.load_state_dict(torch.load(MODEL_OUTPUT_PATH, map_location=DEVICE))
     model.to(DEVICE)
     model.eval()
-    return model
-
-loaded_model = load_model()
+    loaded_model = model
 
 # Inference transform — same as eval transform used during training
 infer_transform = transforms.Compose([
@@ -63,6 +63,8 @@ def home():
 
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
+    if loaded_model is None:
+        return JSONResponse(status_code=503, content={"error": "Model not ready. Run the training pipeline first."})
     try:
         contents = await file.read()
         image = Image.open(io.BytesIO(contents)).convert("RGB")
