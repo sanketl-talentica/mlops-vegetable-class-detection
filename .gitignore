@@ -1,0 +1,65 @@
+# Python
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.so
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Environment variables
+.env
+
+# Artifacts — model weights, processed data (tracked by DVC, not git)
+artifacts/
+
+# DVC cache
+.dvc/cache
+.dvc/tmp
+
+# Logs
+logs/
+
+# MLflow local runs
+mlruns/
+mlartifacts/
+
+# Jupyter
+.ipynb_checkpoints/
+notebook/.ipynb_checkpoints/
+
+# Generated evaluation files
+classification_report.txt
+confusion_matrix.txt
+metrics.json
+
+# Dataset images and archives (large — track with DVC)
+dataset/train/
+dataset/test/
+dataset/validation/
+*.zip
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.tiff
+*.webp
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

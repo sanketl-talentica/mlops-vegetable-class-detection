@@ -1,0 +1,28 @@
+stages:
+  data_ingestion:
+    cmd: python src/data_ingestion.py
+    deps:
+      - src/data_ingestion.py
+      - config/config.yaml
+      - dataset/train
+      - dataset/test
+      - dataset/validation
+    outs:
+      - artifacts/models/class_names.json
+
+  model_training:
+    cmd: python src/model_training.py
+    deps:
+      - src/model_training.py
+      - src/data_preprocessing.py
+      - config/config.yaml
+      - config/model_params.py
+      - artifacts/models/class_names.json
+      - dataset/train
+      - dataset/validation
+      - dataset/test
+    outs:
+      - artifacts/models/vgg16_model.pth
+    metrics:
+      - metrics.json:
+          cache: false

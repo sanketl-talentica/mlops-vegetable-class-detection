@@ -1,0 +1,12 @@
+torch
+torchvision
+Pillow
+pyyaml
+mlflow
+fastapi
+uvicorn
+python-multipart
+dvc
+dagshub
+python-dotenv
+scikit-learn

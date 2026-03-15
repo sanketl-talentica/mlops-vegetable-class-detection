@@ -1,0 +1,23 @@
+data_ingestion:
+  train_dir: "dataset/train"
+  test_dir: "dataset/test"
+  validation_dir: "dataset/validation"
+
+data_processing:
+  image_size: 224
+  batch_size: 32
+  num_workers: 0
+  classes:
+    - Broccoli
+    - Capsicum
+    - Carrot
+    - Cauliflower
+    - Potato
+    - Radish
+    - Tomato
+
+model_training:
+  num_classes: 7
+  epochs: 5
+  learning_rate: 0.001
+  freeze_backbone: true

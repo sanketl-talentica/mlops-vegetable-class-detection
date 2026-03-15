@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/style.css">
+    <title>Vegetable Classification</title>
+    <style>
+        .upload-area {
+            border: 2px dashed #4CAF50;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-bottom: 20px;
+        }
+        .upload-area:hover { background: #f0fff0; }
+        .upload-area input[type="file"] { display: none; }
+        .preview-img {
+            max-width: 280px;
+            max-height: 280px;
+            border-radius: 10px;
+            margin: 16px auto;
+            display: block;
+            border: 2px solid #ddd;
+        }
+        .top3-list { list-style: none; padding: 0; margin-top: 12px; }
+        .top3-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 12px;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            background: #f5f5f5;
+            font-size: 0.95em;
+        }
+        .top3-list li:first-child { background: #e8f5e9; font-weight: bold; }
+        .result-box {
+            background: #e8f5e9;
+            border-left: 5px solid #4CAF50;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .result-box h3 { margin: 0 0 4px; color: #2e7d32; font-size: 1.3em; }
+        .result-box p { margin: 0; color: #555; }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <div class="header">
+        <span class="icon">🥦</span>
+        <h2>Vegetable Classifier</h2>
+        <p class="subtitle">Upload a vegetable image to identify it using VGG16</p>
+    </div>
+
+    <label class="upload-area" id="uploadArea">
+        <input type="file" id="imageInput" accept="image/*">
+        <p id="uploadText">Click to upload or drag & drop an image</p>
+        <img id="preview" class="preview-img" style="display:none;" alt="Preview">
+    </label>
+
+    <button id="predictBtn" disabled>Classify</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    const imageInput = document.getElementById("imageInput");
+    const preview = document.getElementById("preview");
+    const uploadText = document.getElementById("uploadText");
+    const predictBtn = document.getElementById("predictBtn");
+    const resultDiv = document.getElementById("result");
+
+    document.getElementById("uploadArea").addEventListener("click", () => imageInput.click());
+
+    imageInput.addEventListener("change", function() {
+        const file = this.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            preview.src = e.target.result;
+            preview.style.display = "block";
+            uploadText.style.display = "none";
+            predictBtn.disabled = false;
+            resultDiv.innerHTML = "";
+        };
+        reader.readAsDataURL(file);
+    });
+
+    predictBtn.addEventListener("click", async function() {
+        const file = imageInput.files[0];
+        if (!file) return;
+
+        predictBtn.textContent = "Classifying...";
+        predictBtn.disabled = true;
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+            const response = await fetch("/predict", {
+                method: "POST",
+                body: formData,
+            });
+            const data = await response.json();
+
+            if (data.error) {
+                resultDiv.innerHTML = `<div class="result result-nocancel">Error: ${data.error}</div>`;
+            } else {
+                const top3Html = data.top3.map(item =>
+                    `<li><span>${item.class.replace(/_/g, " ")}</span><span>${item.confidence}%</span></li>`
+                ).join("");
+
+                resultDiv.innerHTML = `
+                    <div class="result-box">
+                        <h3>${data.predicted_class.replace(/_/g, " ")}</h3>
+                        <p>Confidence: <strong>${data.confidence}%</strong></p>
+                    </div>
+                    <p style="margin-top:16px; font-weight:600; color:#555;">Top 3 Predictions</p>
+                    <ul class="top3-list">${top3Html}</ul>
+                `;
+            }
+        } catch (err) {
+            resultDiv.innerHTML = `<div class="result result-nocancel">Request failed: ${err.message}</div>`;
+        }
+
+        predictBtn.textContent = "Classify";
+        predictBtn.disabled = false;
+    });
+
+    // Drag and drop support
+    const uploadArea = document.getElementById("uploadArea");
+    uploadArea.addEventListener("dragover", (e) => { e.preventDefault(); uploadArea.style.background = "#f0fff0"; });
+    uploadArea.addEventListener("dragleave", () => { uploadArea.style.background = ""; });
+    uploadArea.addEventListener("drop", (e) => {
+        e.preventDefault();
+        uploadArea.style.background = "";
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith("image/")) {
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            imageInput.files = dt.files;
+            imageInput.dispatchEvent(new Event("change"));
+        }
+    });
+</script>
+
+</body>
+</html>

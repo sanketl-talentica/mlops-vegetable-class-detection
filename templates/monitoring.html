@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Monitoring Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 40px 20px;
+            color: #fff;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .header .icon { font-size: 2.5rem; display: block; margin-bottom: 12px; }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #a78bfa, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle { color: #718096; font-size: 0.9rem; margin-top: 6px; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            max-width: 1000px;
+            margin: 0 auto 48px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 32px 28px;
+            backdrop-filter: blur(12px);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+        }
+
+        .card .card-icon { font-size: 2rem; margin-bottom: 14px; display: block; }
+
+        .card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 8px;
+            color: #e2e8f0;
+        }
+
+        .card p {
+            font-size: 0.82rem;
+            color: #718096;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 22px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            border: none;
+            transition: opacity 0.2s, transform 0.2s;
+            width: 100%;
+            text-align: center;
+        }
+
+        .btn:hover { opacity: 0.85; transform: translateY(-1px); }
+
+        .btn-drift     { background: linear-gradient(135deg, #7c3aed, #3b82f6); color: #fff; }
+        .btn-quality   { background: linear-gradient(135deg, #059669, #10b981); color: #fff; }
+        .btn-perf      { background: linear-gradient(135deg, #d97706, #f59e0b); color: #fff; }
+        .btn-target    { background: linear-gradient(135deg, #dc2626, #f87171); color: #fff; }
+
+        .stats {
+            max-width: 1000px;
+            margin: 0 auto 40px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 24px 32px;
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .stat-item { text-align: center; }
+        .stat-value { font-size: 1.8rem; font-weight: 700; color: #a78bfa; }
+        .stat-label { font-size: 0.75rem; color: #718096; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            color: #718096;
+            font-size: 0.85rem;
+            text-decoration: none;
+            margin-top: 16px;
+        }
+
+        .back-link:hover { color: #a78bfa; }
+
+        .loading { opacity: 0.6; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <span class="icon">📊</span>
+    <h1>Model Monitoring Dashboard</h1>
+    <p class="subtitle">Track data drift, quality, and model performance over time</p>
+</div>
+
+<div class="stats" id="stats">
+    <div class="stat-item">
+        <div class="stat-value" id="total-predictions">—</div>
+        <div class="stat-label">Total Predictions</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-value" id="addicted-count">—</div>
+        <div class="stat-label">Addicted</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-value" id="not-addicted-count">—</div>
+        <div class="stat-label">Not Addicted</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-value" id="addicted-pct">—</div>
+        <div class="stat-label">Addiction Rate</div>
+    </div>
+</div>
+
+<div class="grid">
+
+    <div class="card">
+        <span class="card-icon">📉</span>
+        <h3>Data Drift</h3>
+        <p>Detects if incoming user inputs are shifting away from the training data distribution. Triggers when real-world patterns change.</p>
+        <a href="/report/drift" target="_blank" class="btn btn-drift">View Drift Report</a>
+    </div>
+
+    <div class="card">
+        <span class="card-icon">🔍</span>
+        <h3>Data Quality</h3>
+        <p>Checks for missing values, outliers, and unexpected distributions in incoming prediction requests.</p>
+        <a href="/report/quality" target="_blank" class="btn btn-quality">View Quality Report</a>
+    </div>
+
+    <div class="card">
+        <span class="card-icon">🎯</span>
+        <h3>Model Performance</h3>
+        <p>Confusion matrix, class balance, and classification metrics computed on all logged predictions.</p>
+        <a href="/report/performance" target="_blank" class="btn btn-perf">View Performance Report</a>
+    </div>
+
+    <div class="card">
+        <span class="card-icon">🎲</span>
+        <h3>Target Drift</h3>
+        <p>Monitors if the model's prediction distribution is shifting over time — more addicted or not addicted predictions than expected.</p>
+        <a href="/report/target-drift" target="_blank" class="btn btn-target">View Target Drift</a>
+    </div>
+
+</div>
+
+<a href="/" class="back-link">← Back to Prediction App</a>
+
+<script>
+    async function loadStats() {
+        try {
+            const res = await fetch("/monitoring/stats");
+            if (!res.ok) return;
+            const data = await res.json();
+            document.getElementById("total-predictions").textContent = data.total;
+            document.getElementById("addicted-count").textContent = data.addicted;
+            document.getElementById("not-addicted-count").textContent = data.not_addicted;
+            document.getElementById("addicted-pct").textContent = data.addiction_rate;
+        } catch(e) {}
+    }
+
+    loadStats();
+</script>
+
+</body>
+</html>
