@@ -61,6 +61,31 @@
         }
         .result-box h3 { margin: 0 0 4px; color: #2e7d32; font-size: 1.3em; }
         .result-box p { margin: 0; color: #555; }
+        .classes-info {
+            margin-top: 16px;
+            text-align: center;
+        }
+        .classes-label {
+            font-size: 0.8em;
+            color: #aaa;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .classes-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+        }
+        .classes-grid span {
+            background: rgba(76,175,80,0.15);
+            border: 1px solid rgba(76,175,80,0.5);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.85em;
+            color: #a5d6a7;
+        }
         .error-box {
             background: #ffebee;
             border-left: 5px solid #e53935;
@@ -88,6 +113,19 @@
     </label>
 
     <button id="predictBtn" disabled>Classify</button>
+
+    <div class="classes-info">
+        <p class="classes-label">Supported classes</p>
+        <div class="classes-grid">
+            <span>🥦 Broccoli</span>
+            <span>🫑 Capsicum</span>
+            <span>🥕 Carrot</span>
+            <span>🥬 Cauliflower</span>
+            <span>🥔 Potato</span>
+            <span>🌱 Radish</span>
+            <span>🍅 Tomato</span>
+        </div>
+    </div>
 
     <div id="result"></div>
 </div>

@@ -1,7 +1,7 @@
 # VGG16 fine-tuning hyperparameters
 VGG16_PARAMS = {
     "num_classes": 7,
-    "epochs": 5,
+    "epochs": 3,
     "learning_rate": 0.001,
     "momentum": 0.9,
     "weight_decay": 1e-4,

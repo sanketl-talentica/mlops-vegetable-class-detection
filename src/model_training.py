@@ -127,7 +127,7 @@ class ModelTraining:
             mlflow.set_experiment("Vegetable Classification VGG16")
             with mlflow.start_run():
                 mlflow.set_tag("model_type", "VGG16")
-                mlflow.set_tag("dataset", "Vegetable_15_Classes")
+                mlflow.set_tag("dataset", "Vegetable_7_Classes")
                 mlflow.log_params(self.params)
 
                 logger.info("Starting model training pipeline")

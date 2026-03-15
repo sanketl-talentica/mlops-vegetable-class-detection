@@ -5,29 +5,32 @@ stages:
     deps:
     - path: config/config.yaml
       hash: md5
-      md5: 09f159292dae6145033e81010f997361
-      size: 648
-    - path: dataset/Smartphone_Usage_And_Addiction_Analysis_7500_Rows.csv
+      md5: 4ec55f5b9c5c217995cf6079efc26747
+      size: 408
+    - path: dataset/test
       hash: md5
-      md5: d831a326bc6f0ab76056a12279cb0047
-      size: 601569
+      md5: 4a1ddbe93ce33bec23735678cb3917b3.dir
+      size: 35400785
+      nfiles: 1400
+    - path: dataset/train
+      hash: md5
+      md5: 4b43fc1722615517cc97a4f3fc95bfb6.dir
+      size: 175108633
+      nfiles: 7000
+    - path: dataset/validation
+      hash: md5
+      md5: 8d8ae2d10602385ae2ec8faba3fc9dd2.dir
+      size: 34606253
+      nfiles: 1400
     - path: src/data_ingestion.py
       hash: md5
-      md5: a87876d2906cff7e9e1835ad56fafd45
-      size: 2274
+      md5: 2cf47baa8c7793ea1ca00691c44457a7
+      size: 6473
     outs:
-    - path: artifacts/raw/raw.csv
+    - path: artifacts/models/class_names.json
       hash: md5
-      md5: d831a326bc6f0ab76056a12279cb0047
-      size: 601569
-    - path: artifacts/raw/test.csv
-      hash: md5
-      md5: 059ddff609714adeffcd68e196c2f59e
-      size: 127099
-    - path: artifacts/raw/train.csv
-      hash: md5
-      md5: 94281990791df337b16cb2942c7264a6
-      size: 507830
+      md5: a70bb271050baba9cd9ff319c7aff171
+      size: 109
   data_preprocessing:
     cmd: python src/data_preprocessing.py
     deps:
